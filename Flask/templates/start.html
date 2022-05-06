@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<nav>
+      {% if not current_user.is_authenticated %}        
+        <div class="reg_buttons">
+            <h1 align="center">Вход в чятингус</h1>
+            <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
+            <a class="btn btn-success" href="/login">Войти</a>
+        </div>
+      {% endif %}
+</nav>
+{% endblock %}

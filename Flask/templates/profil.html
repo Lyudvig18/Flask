@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style type="text/css">
+	.buttons {
+		margin: 5px;
+	}
+</style>
+
+<div class="profil">
+	<p align="center">{{current_user.name}}</p>
+
+	<div class="list_chats">
+		<p align="center">Ваши чаты:</p>
+		<hr/>
+	</div>
+
+	<div class="chats">
+		<a class="btn btn-primary new_chat">Создать чат</a>
+		<a class="btn btn-primary join_chat">Присоединиться к чату</a>
+	</div>
+</div>
+
+<div class="buttons">
+	<a class="btn btn-primary" href="/chat">Вернуться</a>
+	<a class="btn btn-primary" href="/logout">Выйти</a>
+</div>
+
+<script type="">
+	$(document).ready(function() {
+		$(".new_chat").click(function(){
+			let chatName = confirm("Уверены, что хотите создать чат?")
+			if (chatName){
+				socket.emit("create_chat", {name: "{{ current_user.name }}"})
+			};
+			
+		});
+		socket.on("chat_created", function(data){
+			$(".list_chats").append("<div class='chat'>" + "Id chat: " + data.id + "</div>")
+		});
+		$(".join_chat").click(function(){
+			let id = prompt("Введите id чата")
+			socket.emit("join_chat", {user_id: "{{current_user.id}}", id: id, name: "{{current_user.name}}"})
+		});
+
+	});
+
+</script>
+
+
+{% endblock %}

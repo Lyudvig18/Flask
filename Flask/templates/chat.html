@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block chat %}
+
+<style type="text/css">
+  body {
+    background-color: white;
+  }
+  .chat {
+    margin: 1px;
+    height: 40px;
+  }
+</style>
+
+{% if current_user.is_authenticated %}
+  <p class="link">
+    <a class="navbar-brand" href="/profil">{{ current_user.name }}</a>
+  </p>
+{% endif %}
+
+<div class="main_menu">
+  <div class="main_chat">
+    <div class="content">
+          <div class="output"></div>
+        	<form onSubmit="return false;">
+        		<p><input type="text" class="form-control input" placeholder="Введите сообщение" aria-describedby="basic-addon2"></p>
+        	</form>
+    </div>
+
+        <script type="text/javascript" charset="utf-8"> 
+          $(document).ready(function() {
+          socket.on('message', function(data) {
+          $("div.output").append("<div class='message'>" + data.name + ": " + `${data.message}` + "</div>");
+          });
+
+          socket.on("change_room", function(data){
+            room = data.room;
+          });
+
+          document.addEventListener('keydown', function(event) {
+          if (event.code == "Enter" && typeof message !== undefined) {
+            let message = $(".input").val();
+            let name = "{{ current_user.name }}"
+            socket.emit("message", {message: message, name: name, room: room});
+              $('.input').val('');
+              }
+          });
+        });
+
+        </script>
+  </div>
+
+  <div class="rooms">
+    {% for key, value in chat %}
+        {% if key == current_user.id %}
+          <div class="chat">Id chat: {{value}}</div>
+        {% endif %}
+    {% endfor %}
+  </div>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $(".chat").click(function(){
+        room_id = $(this).text().slice(9)
+        socket.emit("in_room", {name: "{{current_user.name}}" , room_id: room_id})
+      });
+
+    });
+
+  </script>
+
+</div>
+{% endblock %}
